@@ -28,9 +28,15 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
             var section = $('<div class=display style="margin-top: 50px;"></div>');
             var p = $('<div class=paragraph style="color: black; font-size: 3em; text-align: center;">PUISSANCE 4</div>');
             var actualPlayer = $('<div class=display_player style="color: black; font-size: 1em; text-align: center; margin-top: 30px;">C\'est au tour de : Joueur 1</div>');
+            var victory = $('<div class=victory style="color: black; font-size: 1em; text-align: center; margin-top: 30px;">Victoires : </div>');
+            var displayPlayer1 = $('<div class=display_player1 style="color: black; font-size: 1em; text-align: center; margin-top: 30px;">Joueur 1 : 0</div>');
+            var displayPlayer2 = $('<div class=display_player2 style="color: black; font-size: 1em; text-align: center; margin-top: 30px;">Joueur 2 : 0</div>');
             $('body').append(section);
             $(section).before(p);
             $(p).after(actualPlayer);
+            $(actualPlayer).after(victory);
+            $(victory).after(displayPlayer1);
+            $(displayPlayer1).after(displayPlayer2);
             
             for(var row_count = 1; row_count <= row_nbr; row_count++)
             {
@@ -39,7 +45,7 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
             
                 for(var col_count = 1; col_count <= col_nbr; col_count++)
                 {
-                    var circle = $('<canvas value=0 class="empty neutral" data-col=' + col_count + ' data-row=' + row_count + ' width="150px" height="150px"/>');
+                    var circle = $('<canvas value=0 class="empty neutral" data-col=' + col_count + ' data-row=' + row_count + ' width="100px" height="100px"/>');
                     var ctx = circle[0].getContext('2d');
                     $('#row-' + row_count).append(circle);
                     ctx.fillStyle = 'blue';
@@ -47,7 +53,7 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
                     ctx.fillRect(0,0,150,150);
                     ctx.fillStyle = 'white';
                     ctx.beginPath();
-                    ctx.arc(75,75,60,0,2*Math.PI);
+                    ctx.arc(50,50,40,0,2*Math.PI);
                     ctx.fill();
                 }
             }
@@ -58,34 +64,22 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
     {
         constructor()
         {
-            //this.emptyCel = 0;
             this.p1value = 1;
             this.p2value = 2;
             this.player1 = p1token;
             this.player2 = p2token;
-            //this.nbrOfPlayers = 2;
             this.currentPlayer = 1;
-        }
-
-        check_cel(cell)
-        {
-            console.log(cell);
-            if(cell.hasClass("filled"))
-            {
-                alert("Already filled");
-            }
         }
 
         insert_tokens(self)
         {
             /*  
             **  Instancing a new variable
-            **  because this has no value within an unknown function
+            **  because 'this' has no value within an unknown function
             */
             var play = this;
             var checkedCol = $(self).data('col');
-            var filledCells = 0;           
-            
+            var filledCells = 0;   
 
             if(play.currentPlayer == 1)
             {
@@ -107,7 +101,7 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
                     var ctx = canvas.getContext('2d');
                     ctx.fillStyle = color;
                     ctx.beginPath();
-                    ctx.arc(75,75,60,0,2*Math.PI);
+                    ctx.arc(50,50,40,0,2*Math.PI);
                     ctx.fill();
                     $(cel).attr('value', playervalue);
                     $(cel).removeClass('empty');
@@ -142,16 +136,15 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
 
         horizontal_check(activ_cel)
         {
-            // Recuperer data col de la cellule
             var colpos = $(activ_cel).data('col');
             var activcel_val = $(activ_cel).attr('value');
-            //alert(colposval);
             var colmin = colpos - 3;
             var colmax = colpos + 3;
             var rowpos = $(activ_cel).data('row');
             var series = 0;
             var filledCells = 0;
             var gameover = 0;
+            var victory = 0;
 
             if(colmin < 1)
             {
@@ -176,20 +169,29 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
                 if(series == 4)
                 {
                     alert('Joueur ' + activcel_val + ' a gagné la partie');
+                    if(activcel_val == 1)
+                    {
+                        victory ++;
+                        $('.display_player1').html('Joueur 1 : ' + victory);
+                    }
+                    else if(activcel_val == 2)
+                    {
+                        victory ++;
+                        $('.display_player2').html('Joueur 2 : ' + victory);
+                    }
                 }
             }
         }
 
         vertical_check(activ_cel)
         {
-            // Recuperer data col de la cellule
             var colpos = $(activ_cel).data('col');
             var activcel_val = $(activ_cel).attr('value');
-            //alert(colposval);
             var rowpos = $(activ_cel).data('row');
             var rowmin = rowpos - 3;
             var rowmax = rowpos + 3;
             var series = 0;
+            var victory = 0;
 
             if(rowmin < 1)
             {
@@ -203,7 +205,6 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
             {
                 var cel = $('[data-col='+colpos+'][data-row='+i+']');
                 var value = $(cel).attr('value');
-                //alert(value);
                 if(value == activcel_val)
                 {
                     series ++;
@@ -215,19 +216,29 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
                 if(series == 4)
                 {
                     alert('Joueur ' + activcel_val + ' a gagné la partie');
+                    if(activcel_val == 1)
+                    {
+                        victory ++;
+                        $('.display_player1').html('Joueur 1 : ' + victory);
+                    }
+                    else if(activcel_val == 2)
+                    {
+                        victory ++;
+                        $('.display_player2').html('Joueur 2 : ' + victory);
+                    }
                 }
             }
         }
 
         diag1_check(activ_cel)
         {
-            // Recuperer data col de la cellule
             var colpos = $(activ_cel).data('col');
             var activcel_val = $(activ_cel).attr('value');
             var rowpos = $(activ_cel).data('row');
             var rowmin = colpos - 3;
             var rowmax = colpos + 3;
             var series = 0;
+            var victory = 0;
 
             if(rowmin < 1)
             {
@@ -252,13 +263,22 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
                 if(series == 4)
                 {
                     alert('Joueur ' + activcel_val + ' a gagné la partie');
+                    if(activcel_val == 1)
+                    {
+                        victory ++;
+                        $('.display_player1').html('Joueur 1 : ' + victory);
+                    }
+                    else if(activcel_val == 2)
+                    {
+                        victory ++;
+                        $('.display_player2').html('Joueur 2 : ' + victory);
+                    }
                 }
             }
         }
 
         diag2_check(activ_cel)
         {
-            // Recuperer data col de la cellule
             var colpos = $(activ_cel).data('col');
             var activcel_val = $(activ_cel).attr('value');
             var rowpos = $(activ_cel).data('row');
@@ -267,7 +287,7 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
             var rowmin = rowpos - 3;
             var rowmax = rowpos + 3;
             var series = 0;
-            
+            var victory = 0;
 
             if(rowmin < 1)
             {
@@ -301,6 +321,16 @@ $.fn.P4 = function(col_nbr, row_nbr, p1token, p2token)
                 if(series == 4)
                 {
                     alert('Joueur ' + activcel_val + ' a gagné la partie');
+                    if(activcel_val == 1)
+                    {
+                        victory ++;
+                        $('.display_player1').html('Joueur 1 : ' + victory);
+                    }
+                    else if(activcel_val == 2)
+                    {
+                        victory ++;
+                        $('.display_player2').html('Joueur 2 : ' + victory);
+                    }
                 }
                 j--;
             }
